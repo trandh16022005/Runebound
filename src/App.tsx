@@ -1,27 +1,82 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createGame } from './game/Game'
 import './App.css'
 
+type Screen = 'menu' | 'game' | 'levels' | 'settings'
+
 function App() {
+
+  const [screen, setScreen] =
+      useState<Screen>('menu')
+
   useEffect(() => {
-    const game = createGame()
+
+    if (screen !== 'game') {
+      return
+    }
+
+    const game =
+        createGame(() => {
+          setScreen('menu')
+        })
 
     return () => {
       game.destroy(true)
     }
-  }, [])
+
+  }, [screen])
+
+  if (screen === 'game') {
+    return (
+        <main className="game-page">
+          <div id="game-container" />
+        </main>
+    )
+  }
 
   return (
-      <main className="game-page">
-        <div className="game-header">
-          <h1>Mini Platformer</h1>
+      <main className="main-menu">
 
-          <p>
-            A/D hoặc ←/→ để chạy · Space để nhảy
+        <div className="menu-content">
+
+          <h1 className="game-title">
+            Runebound
+          </h1>
+
+          <p className="game-subtitle">
+            A 2D Platformer Adventure
           </p>
+
+          <div className="menu-buttons">
+
+            <button
+                onClick={() => setScreen('game')}
+            >
+              PLAY
+            </button>
+
+            <button
+                onClick={() => setScreen('levels')}
+            >
+              LEVELS
+            </button>
+
+            <button
+                onClick={() => setScreen('settings')}
+            >
+              SETTINGS
+            </button>
+
+            <button
+                onClick={() => window.close()}
+            >
+              QUIT
+            </button>
+
+          </div>
+
         </div>
 
-        <div id="game-container" />
       </main>
   )
 }

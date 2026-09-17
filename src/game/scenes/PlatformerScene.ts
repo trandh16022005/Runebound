@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { PauseMenu } from '../ui/PauseMenu'
 
 const GAME_WIDTH = 1280
 const GAME_HEIGHT = 720
@@ -609,6 +610,8 @@ export class PlatformerScene extends Phaser.Scene {
 
     private bossHpText!: Phaser.GameObjects.Text
 
+    private pauseMenu!: PauseMenu
+
 
     constructor() {
 
@@ -687,6 +690,38 @@ export class PlatformerScene extends Phaser.Scene {
 
         this.createUI()
 
+        this.createPauseMenu()
+
+    }
+
+    // =========================
+    // PAUSE MENU
+    // =========================
+
+    private createPauseMenu() {
+
+        this.pauseMenu =
+            new PauseMenu(
+                this,
+                {
+                    onResume: () => {
+
+                        // Resume được xử lý bởi PauseMenu
+                    },
+
+                    onRestart: () => {
+
+                        this.restartLevel()
+                    },
+
+                    onMainMenu: () => {
+
+                        this.events.emit(
+                            'main-menu',
+                        )
+                    },
+                },
+            )
     }
 
 
@@ -695,6 +730,17 @@ export class PlatformerScene extends Phaser.Scene {
     // ==================================================
 
     update() {
+
+        // ------------------------------------------------
+        // PAUSE MENU
+        // ------------------------------------------------
+
+        if (
+            this.pauseMenu &&
+            this.pauseMenu.isOpen()
+        ) {
+            return
+        }
 
         // ------------------------------------------------
         // WIN / GAME OVER

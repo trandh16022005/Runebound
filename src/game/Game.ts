@@ -31,6 +31,30 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     scene: [PlatformerScene],
 }
 
-export function createGame() {
-    return new Phaser.Game(gameConfig)
+export function createGame(
+    onMainMenu: () => void,
+) {
+
+    const game =
+        new Phaser.Game(
+            gameConfig,
+        )
+
+    game.events.once(
+        Phaser.Core.Events.READY,
+        () => {
+
+            const scene =
+                game.scene.getScene(
+                    'PlatformerScene',
+                )
+
+            scene.events.on(
+                'main-menu',
+                onMainMenu,
+            )
+        },
+    )
+
+    return game
 }
