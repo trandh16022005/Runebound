@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import { PauseMenu } from '../ui/PauseMenu'
+import { ResultMenu } from '../ui/ResultMenu'
 
 const GAME_WIDTH = 1280
 const GAME_HEIGHT = 720
@@ -611,6 +612,7 @@ export class PlatformerScene extends Phaser.Scene {
     private bossHpText!: Phaser.GameObjects.Text
 
     private pauseMenu!: PauseMenu
+    private resultMenu!: ResultMenu
 
 
     constructor() {
@@ -692,6 +694,8 @@ export class PlatformerScene extends Phaser.Scene {
 
         this.createPauseMenu()
 
+        this.createResultMenu()
+
     }
 
     // =========================
@@ -724,6 +728,28 @@ export class PlatformerScene extends Phaser.Scene {
             )
     }
 
+    // =========================
+    // RESUL MENU
+    // =========================
+
+    private createResultMenu() {
+        this.resultMenu = new ResultMenu(this, {
+            onRetry: () => {
+                this.resultMenu.hide()
+                this.restartLevel()
+            },
+
+            onMainMenu: () => {
+                this.resultMenu.hide()
+                this.events.emit('main-menu')
+            },
+
+            onContinue: () => {
+                this.resultMenu.hide()
+                this.events.emit('continue-level')
+            },
+        })
+    }
 
     // ==================================================
     // UPDATE
@@ -4646,6 +4672,9 @@ export class PlatformerScene extends Phaser.Scene {
     // ======================================================
 
     private restartLevel() {
+        if (this.resultMenu) {
+            this.resultMenu.hide()
+        }
 
         // ------------------------------------------------
         // RESET GAME STATE
@@ -5088,70 +5117,44 @@ export class PlatformerScene extends Phaser.Scene {
     }
 
 
+
     // ======================================================
     // GAME OVER
     // ======================================================
 
     private gameOver() {
+        if (this.isGameOver || this.isWon) {
+            return
+        }
 
         this.isGameOver = true
-
         this.isRespawning = false
 
+        this.player.setVelocity(0, 0)
+        this.messageText.setVisible(false)
 
-        this.player.setVelocity(
-            0,
-            0,
-        )
-
-
-        this.messageText.setText(
-            `GAME OVER\n\nPress R to restart`,
-        )
-
-
-        this.messageText.setVisible(
-            true,
-        )
-
+        this.resultMenu.showGameOver()
     }
-
 
     // ======================================================
     // WIN
     // ======================================================
 
     private winGame() {
-
         if (
             this.isWon ||
             this.isGameOver ||
             !this.gatewayOpen
         ) {
-
             return
-
         }
-
 
         this.isWon = true
 
+        this.player.setVelocity(0, 0)
+        this.messageText.setVisible(false)
 
-        this.player.setVelocity(
-            0,
-            0,
-        )
-
-
-        this.messageText.setText(
-            `LEVEL 1 COMPLETE!\n\nPress R to play again`,
-        )
-
-
-        this.messageText.setVisible(
-            true,
-        )
-
+        this.resultMenu.showLevelComplete()
     }
 
 }

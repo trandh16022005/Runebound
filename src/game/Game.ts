@@ -22,6 +22,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
         default: 'arcade',
         arcade: {
             gravity: {
+                x: 0,
                 y: 1200,
             },
             debug: false,
@@ -34,20 +35,12 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
 export function createGame(
     onMainMenu: () => void,
 ) {
-
-    const game =
-        new Phaser.Game(
-            gameConfig,
-        )
+    const game = new Phaser.Game(gameConfig)
 
     game.events.once(
         Phaser.Core.Events.READY,
         () => {
-
-            const scene =
-                game.scene.getScene(
-                    'PlatformerScene',
-                )
+            const scene = game.scene.getScene('PlatformerScene')
 
             scene.events.on(
                 'main-menu',
