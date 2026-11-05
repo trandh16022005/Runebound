@@ -1,5 +1,4 @@
 05/11/2026
-31/10/2026
 
 # React + TypeScript + Vite
 
